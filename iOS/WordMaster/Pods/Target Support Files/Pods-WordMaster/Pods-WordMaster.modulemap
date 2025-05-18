@@ -1,0 +1,6 @@
+framework module Pods_WordMaster {
+  umbrella header "Pods-WordMaster-umbrella.h"
+
+  export *
+  module * { export * }
+}

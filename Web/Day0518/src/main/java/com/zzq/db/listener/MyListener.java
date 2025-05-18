@@ -1,0 +1,42 @@
+package com.zzq.db.listener;
+
+import jakarta.servlet.ServletContextAttributeEvent;
+import jakarta.servlet.ServletContextAttributeListener;
+import jakarta.servlet.annotation.WebListener;
+
+/**
+ * Application Lifecycle Listener implementation class MyListener
+ *
+ */
+@WebListener
+public class MyListener implements ServletContextAttributeListener {
+
+    /**
+     * Default constructor. 
+     */
+    public MyListener() {
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+     * @see ServletContextAttributeListener#attributeReplaced(ServletContextAttributeEvent)
+     */
+    public void attributeReplaced(ServletContextAttributeEvent scae)  { 
+         // TODO Auto-generated method stub
+    }
+
+	/**
+     * @see ServletContextAttributeListener#attributeRemoved(ServletContextAttributeEvent)
+     */
+    public void attributeRemoved(ServletContextAttributeEvent scae)  { 
+         // TODO Auto-generated method stub
+    }
+
+	/**
+     * @see ServletContextAttributeListener#attributeAdded(ServletContextAttributeEvent)
+     */
+    public void attributeAdded(ServletContextAttributeEvent scae)  { 
+         // TODO Auto-generated method stub
+    }
+	
+}

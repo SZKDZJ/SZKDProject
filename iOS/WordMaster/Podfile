@@ -1,0 +1,6 @@
+platform :ios, '10.0'  # 设置 iOS 版本
+
+target 'WordMaster' do
+  use_frameworks! 
+  
+end

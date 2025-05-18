@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center; /* 水平居中 */
+      align-items: center;     /* 垂直居中 */
+      height: 100vh;           /* 容器高度为视口高度 */
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div>
+    账号  <input id = "account">  <br><br>
+    密码  <input id = "password" type="password"> <br><br>
+    <button onclick="login()" style="display: block; margin: 0 auto;">登录</button>
+  </div>
+</div>
+
+<script>
+  function login(){
+    let acc=account.value
+    let pass=password.value
+    if(acc == "admin" && pass == "123456"){
+      alert("登录成功！")
+    }else{
+      alert("账号或密码不正确")
+    }
+  }
+</script>
+</body>
+</html>

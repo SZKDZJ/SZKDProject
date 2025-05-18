@@ -1,0 +1,2 @@
+D:\AaStudying\Project\C\Data Structure\Linear List\Sequence List_c\x64\Debug\Sequence List_c.exe
+C:\Users\HP\Desktop\顺序表-张子琪-20231601\Sequence List_c\x64\Debug\Sequence List_c.exe

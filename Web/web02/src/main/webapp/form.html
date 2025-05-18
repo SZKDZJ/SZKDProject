@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<form action="http://localhost:8080/web02/user/register"method="get">
+		账号	：<input type="text"name="loginId"></br>
+		密码：<input type="password" name="loginPassword" placeholder="请输入密码" /></br>
+		年龄：<input type="text"name="loginAge"></br>
+		姓名：<input type="text"name="loginname"></br>
+		性别：
+		<input id="man" type="radio" name="sex" value="1"/>
+		<label for="man">男</label><!-- 文字for man这个标记，让文字替代了标记 -->
+		<input id="woman" type="radio" name="sex" value="2"/>女</br>
+		<!-- 多选 复选框 -->
+		<input type="checkbox" name="like" value="0" checked />读书
+		<input type="checkbox" name="like" value="1" />体育
+		<input type="checkbox" name="like" value="2" />旅游</br>
+		<!-- 下拉框 少用 不美观-->
+		<select name="nationality">
+			<option value="-1" selected>---请选择---</option>
+    		<option value="0" selected>中国</option>
+    		<option value="1">美国</option>
+    		<option value="2">英国</option>
+		</select></br>
+		<textarea name="brief" rows="5" cols="30">--这里输入个人简介--</textarea></br>
+		<input type="button" value="这是一个普通按钮" /></br>
+		<button>这是一个<span>普通</span>按钮</button></br>
+		选课：
+		<input type="checkbox" name="course" value="0" checked />计算机网络
+		<input type="checkbox" name="course" value="1" />操作系统
+		<input type="checkbox" name="course" value="1" />JavaWeb
+		<input type="checkbox" name="course" value="1" />计算机组成原理</br>
+		<button typr="submit">注册</button>
+	</form>
+
+</body>
+</html>

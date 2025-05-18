@@ -1,0 +1,33 @@
+{
+    "Helen": {
+        "account": "2023",
+        "password": "2024",
+        "score": 57,
+        "wrong word book": [
+            "apple",
+            "superficial"
+        ]
+    },
+    "Candy": {
+        "account": "2001",
+        "password": "2002",
+        "score": 0,
+        "wrong word book": []
+    },
+    "CC": {
+        "account": "2024",
+        "password": "2025",
+        "score": 0,
+        "wrong word book": []
+    },
+    "Tom": {
+        "account": "111",
+        "password": "111",
+        "score": 9,
+        "wrong word book": [
+            "apple",
+            "hogwarts",
+            "intermediate"
+        ]
+    }
+}

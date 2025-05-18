@@ -1,0 +1,302 @@
+[
+    {
+        "word": "cat0",
+        "pronunciation": "k\u00e6t",
+        "definition": "a small domesticated carnivorous mammal",
+        "audioURL": "https://example.com/cat0.mp3"
+    },
+    {
+        "word": "moon1",
+        "pronunciation": "mu\u02d0n",
+        "definition": "the natural satellite of the Earth",
+        "audioURL": "https://example.com/moon1.mp3"
+    },
+    {
+        "word": "book2",
+        "pronunciation": "b\u028ak",
+        "definition": "a set of written or printed pages bound together",
+        "audioURL": "https://example.com/book2.mp3"
+    },
+    {
+        "word": "car3",
+        "pronunciation": "k\u0251r",
+        "definition": "a road vehicle with an engine and four wheels",
+        "audioURL": "https://example.com/car3.mp3"
+    },
+    {
+        "word": "bird4",
+        "pronunciation": "b\u025crd",
+        "definition": "a warm-blooded egg-laying vertebrate with feathers and wings",
+        "audioURL": "https://example.com/bird4.mp3"
+    },
+    {
+        "word": "moon5",
+        "pronunciation": "mu\u02d0n",
+        "definition": "the natural satellite of the Earth",
+        "audioURL": "https://example.com/moon5.mp3"
+    },
+    {
+        "word": "fire6",
+        "pronunciation": "\u02c8fa\u026a\u0259r",
+        "definition": "the phenomenon of combustion manifested in light, flame, and heat",
+        "audioURL": "https://example.com/fire6.mp3"
+    },
+    {
+        "word": "water7",
+        "pronunciation": "\u02c8w\u0254\u02d0t\u0259r",
+        "definition": "a colorless, transparent, odorless liquid",
+        "audioURL": "https://example.com/water7.mp3"
+    },
+    {
+        "word": "bird8",
+        "pronunciation": "b\u025crd",
+        "definition": "a warm-blooded egg-laying vertebrate with feathers and wings",
+        "audioURL": "https://example.com/bird8.mp3"
+    },
+    {
+        "word": "water9",
+        "pronunciation": "\u02c8w\u0254\u02d0t\u0259r",
+        "definition": "a colorless, transparent, odorless liquid",
+        "audioURL": "https://example.com/water9.mp3"
+    },
+    {
+        "word": "water10",
+        "pronunciation": "\u02c8w\u0254\u02d0t\u0259r",
+        "definition": "a colorless, transparent, odorless liquid",
+        "audioURL": "https://example.com/water10.mp3"
+    },
+    {
+        "word": "car11",
+        "pronunciation": "k\u0251r",
+        "definition": "a road vehicle with an engine and four wheels",
+        "audioURL": "https://example.com/car11.mp3"
+    },
+    {
+        "word": "book12",
+        "pronunciation": "b\u028ak",
+        "definition": "a set of written or printed pages bound together",
+        "audioURL": "https://example.com/book12.mp3"
+    },
+    {
+        "word": "dog13",
+        "pronunciation": "d\u0254g",
+        "definition": "a domesticated carnivorous mammal with a barking sound",
+        "audioURL": "https://example.com/dog13.mp3"
+    },
+    {
+        "word": "moon14",
+        "pronunciation": "mu\u02d0n",
+        "definition": "the natural satellite of the Earth",
+        "audioURL": "https://example.com/moon14.mp3"
+    },
+    {
+        "word": "fire15",
+        "pronunciation": "\u02c8fa\u026a\u0259r",
+        "definition": "the phenomenon of combustion manifested in light, flame, and heat",
+        "audioURL": "https://example.com/fire15.mp3"
+    },
+    {
+        "word": "book16",
+        "pronunciation": "b\u028ak",
+        "definition": "a set of written or printed pages bound together",
+        "audioURL": "https://example.com/book16.mp3"
+    },
+    {
+        "word": "car17",
+        "pronunciation": "k\u0251r",
+        "definition": "a road vehicle with an engine and four wheels",
+        "audioURL": "https://example.com/car17.mp3"
+    },
+    {
+        "word": "tree18",
+        "pronunciation": "tri",
+        "definition": "a woody perennial plant with a trunk and branches",
+        "audioURL": "https://example.com/tree18.mp3"
+    },
+    {
+        "word": "moon19",
+        "pronunciation": "mu\u02d0n",
+        "definition": "the natural satellite of the Earth",
+        "audioURL": "https://example.com/moon19.mp3"
+    },
+    {
+        "word": "car20",
+        "pronunciation": "k\u0251r",
+        "definition": "a road vehicle with an engine and four wheels",
+        "audioURL": "https://example.com/car20.mp3"
+    },
+    {
+        "word": "book21",
+        "pronunciation": "b\u028ak",
+        "definition": "a set of written or printed pages bound together",
+        "audioURL": "https://example.com/book21.mp3"
+    },
+    {
+        "word": "cat22",
+        "pronunciation": "k\u00e6t",
+        "definition": "a small domesticated carnivorous mammal",
+        "audioURL": "https://example.com/cat22.mp3"
+    },
+    {
+        "word": "fire23",
+        "pronunciation": "\u02c8fa\u026a\u0259r",
+        "definition": "the phenomenon of combustion manifested in light, flame, and heat",
+        "audioURL": "https://example.com/fire23.mp3"
+    },
+    {
+        "word": "fire24",
+        "pronunciation": "\u02c8fa\u026a\u0259r",
+        "definition": "the phenomenon of combustion manifested in light, flame, and heat",
+        "audioURL": "https://example.com/fire24.mp3"
+    },
+    {
+        "word": "water25",
+        "pronunciation": "\u02c8w\u0254\u02d0t\u0259r",
+        "definition": "a colorless, transparent, odorless liquid",
+        "audioURL": "https://example.com/water25.mp3"
+    },
+    {
+        "word": "cat26",
+        "pronunciation": "k\u00e6t",
+        "definition": "a small domesticated carnivorous mammal",
+        "audioURL": "https://example.com/cat26.mp3"
+    },
+    {
+        "word": "water27",
+        "pronunciation": "\u02c8w\u0254\u02d0t\u0259r",
+        "definition": "a colorless, transparent, odorless liquid",
+        "audioURL": "https://example.com/water27.mp3"
+    },
+    {
+        "word": "book28",
+        "pronunciation": "b\u028ak",
+        "definition": "a set of written or printed pages bound together",
+        "audioURL": "https://example.com/book28.mp3"
+    },
+    {
+        "word": "fire29",
+        "pronunciation": "\u02c8fa\u026a\u0259r",
+        "definition": "the phenomenon of combustion manifested in light, flame, and heat",
+        "audioURL": "https://example.com/fire29.mp3"
+    },
+    {
+        "word": "bird30",
+        "pronunciation": "b\u025crd",
+        "definition": "a warm-blooded egg-laying vertebrate with feathers and wings",
+        "audioURL": "https://example.com/bird30.mp3"
+    },
+    {
+        "word": "sun31",
+        "pronunciation": "s\u028cn",
+        "definition": "the star at the center of the solar system",
+        "audioURL": "https://example.com/sun31.mp3"
+    },
+    {
+        "word": "book32",
+        "pronunciation": "b\u028ak",
+        "definition": "a set of written or printed pages bound together",
+        "audioURL": "https://example.com/book32.mp3"
+    },
+    {
+        "word": "dog33",
+        "pronunciation": "d\u0254g",
+        "definition": "a domesticated carnivorous mammal with a barking sound",
+        "audioURL": "https://example.com/dog33.mp3"
+    },
+    {
+        "word": "car34",
+        "pronunciation": "k\u0251r",
+        "definition": "a road vehicle with an engine and four wheels",
+        "audioURL": "https://example.com/car34.mp3"
+    },
+    {
+        "word": "tree35",
+        "pronunciation": "tri",
+        "definition": "a woody perennial plant with a trunk and branches",
+        "audioURL": "https://example.com/tree35.mp3"
+    },
+    {
+        "word": "cat36",
+        "pronunciation": "k\u00e6t",
+        "definition": "a small domesticated carnivorous mammal",
+        "audioURL": "https://example.com/cat36.mp3"
+    },
+    {
+        "word": "fire37",
+        "pronunciation": "\u02c8fa\u026a\u0259r",
+        "definition": "the phenomenon of combustion manifested in light, flame, and heat",
+        "audioURL": "https://example.com/fire37.mp3"
+    },
+    {
+        "word": "sun38",
+        "pronunciation": "s\u028cn",
+        "definition": "the star at the center of the solar system",
+        "audioURL": "https://example.com/sun38.mp3"
+    },
+    {
+        "word": "sun39",
+        "pronunciation": "s\u028cn",
+        "definition": "the star at the center of the solar system",
+        "audioURL": "https://example.com/sun39.mp3"
+    },
+    {
+        "word": "tree40",
+        "pronunciation": "tri",
+        "definition": "a woody perennial plant with a trunk and branches",
+        "audioURL": "https://example.com/tree40.mp3"
+    },
+    {
+        "word": "cat41",
+        "pronunciation": "k\u00e6t",
+        "definition": "a small domesticated carnivorous mammal",
+        "audioURL": "https://example.com/cat41.mp3"
+    },
+    {
+        "word": "water42",
+        "pronunciation": "\u02c8w\u0254\u02d0t\u0259r",
+        "definition": "a colorless, transparent, odorless liquid",
+        "audioURL": "https://example.com/water42.mp3"
+    },
+    {
+        "word": "cat43",
+        "pronunciation": "k\u00e6t",
+        "definition": "a small domesticated carnivorous mammal",
+        "audioURL": "https://example.com/cat43.mp3"
+    },
+    {
+        "word": "bird44",
+        "pronunciation": "b\u025crd",
+        "definition": "a warm-blooded egg-laying vertebrate with feathers and wings",
+        "audioURL": "https://example.com/bird44.mp3"
+    },
+    {
+        "word": "car45",
+        "pronunciation": "k\u0251r",
+        "definition": "a road vehicle with an engine and four wheels",
+        "audioURL": "https://example.com/car45.mp3"
+    },
+    {
+        "word": "water46",
+        "pronunciation": "\u02c8w\u0254\u02d0t\u0259r",
+        "definition": "a colorless, transparent, odorless liquid",
+        "audioURL": "https://example.com/water46.mp3"
+    },
+    {
+        "word": "tree47",
+        "pronunciation": "tri",
+        "definition": "a woody perennial plant with a trunk and branches",
+        "audioURL": "https://example.com/tree47.mp3"
+    },
+    {
+        "word": "bird48",
+        "pronunciation": "b\u025crd",
+        "definition": "a warm-blooded egg-laying vertebrate with feathers and wings",
+        "audioURL": "https://example.com/bird48.mp3"
+    },
+    {
+        "word": "fire49",
+        "pronunciation": "\u02c8fa\u026a\u0259r",
+        "definition": "the phenomenon of combustion manifested in light, flame, and heat",
+        "audioURL": "https://example.com/fire49.mp3"
+    }
+]

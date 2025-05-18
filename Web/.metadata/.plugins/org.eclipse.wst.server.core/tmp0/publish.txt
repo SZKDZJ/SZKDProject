@@ -1,0 +1,4 @@
+#Tomcat publish data
+#Sun May 18 12:02:23 CST 2025
+org.eclipse.jst.jee.server\:Day0518=/Library/tomcat10/apache-tomcat-10.1.39/wtpwebapps/Day0518
+org.eclipse.jst.jee.server\:web02=/Library/tomcat10/apache-tomcat-10.1.39/wtpwebapps/web02

@@ -1,0 +1,5 @@
+package com.zzq.db.servlet;
+
+public class GetCookie {
+
+}

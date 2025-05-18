@@ -1,0 +1,35 @@
+package com.zzq.db.servlet;
+
+import jakarta.servlet.annotation.WebListener;
+import jakarta.servlet.http.HttpSessionActivationListener;
+import jakarta.servlet.http.HttpSessionEvent;
+
+/**
+ * Application Lifecycle Listener implementation class MyListener3
+ *
+ */
+@WebListener
+public class MyListener3 implements HttpSessionActivationListener {
+
+    /**
+     * Default constructor. 
+     */
+    public MyListener3() {
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+     * @see HttpSessionActivationListener#sessionDidActivate(HttpSessionEvent)
+     */
+    public void sessionDidActivate(HttpSessionEvent se)  { 
+         // TODO Auto-generated method stub
+    }
+
+	/**
+     * @see HttpSessionActivationListener#sessionWillPassivate(HttpSessionEvent)
+     */
+    public void sessionWillPassivate(HttpSessionEvent se)  { 
+         // TODO Auto-generated method stub
+    }
+	
+}

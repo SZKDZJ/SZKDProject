@@ -1,0 +1,69 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\AaStudying\\Project\\C\\Data Structure\\Linear List\\Sequence List_c\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\AaStudying\\Project\\C\\Data Structure\\Priority Queue_zzq\\main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\AaStudying\\Project\\C\\Data Structure\\Single Chain List\\Single Chain List_c\\main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\AaStudying\\Project\\C\\Data Structure\\Linear List\\Sequence List_c\\main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:main.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "main.c",
+              "DocumentMoniker": "D:\\AaStudying\\Project\\C\\Data Structure\\Single Chain List\\Single Chain List_c\\main.c",
+              "RelativeDocumentMoniker": "..\\..\\Single Chain List\\Single Chain List_c\\main.c",
+              "ToolTip": "D:\\AaStudying\\Project\\C\\Data Structure\\Single Chain List\\Single Chain List_c\\main.c",
+              "RelativeToolTip": "..\\..\\Single Chain List\\Single Chain List_c\\main.c",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAADQAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-01-03T04:06:34.94Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "main.c",
+              "DocumentMoniker": "D:\\AaStudying\\Project\\C\\Data Structure\\Linear List\\Sequence List_c\\main.c",
+              "RelativeDocumentMoniker": "main.c",
+              "ToolTip": "D:\\AaStudying\\Project\\C\\Data Structure\\Linear List\\Sequence List_c\\main.c",
+              "RelativeToolTip": "main.c",
+              "ViewState": "AgIAAIQAAAAAAAAAAAAAABsAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-01-03T03:10:29.37Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "main.c",
+              "DocumentMoniker": "D:\\AaStudying\\Project\\C\\Data Structure\\Priority Queue_zzq\\main.c",
+              "RelativeDocumentMoniker": "..\\..\\Priority Queue_zzq\\main.c",
+              "ToolTip": "D:\\AaStudying\\Project\\C\\Data Structure\\Priority Queue_zzq\\main.c*",
+              "RelativeToolTip": "..\\..\\Priority Queue_zzq\\main.c*",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAAACYAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-01-03T07:18:00.461Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+      // //let 声明一个变量 类型由值决定
+      // let num="hello"
+      // //const 表示声明一个常量 变量赋值之后不可修改
+      // const numA=200
+      // num=500
+      // //-----------------------------------
+      // //字符串可使用单引号或双引号
+      // let str='字符串'
+      // //简单输出
+      // document.write("是否有错"+num)
+      //
+      // //假 false, 0, undefined, null, ""这5种情况都是假，除了这五种都是真
+      // if(5>4){
+      //   document.write("正确")
+      // }else{
+      //   document.write("错误")
+      // }
+      // if(5){//可运行，除了那5种都是真
+      //   document.write("正确")
+      // }
+      // //---------------------------------------
+      // let str1="321"
+      // document.write(str1+100)
+      // //parseInt字符串转成数字
+      // let num1=parseInt(str1)
+      // document.write(num1+100)
+      // str1=parseInt(str1)
+      // document.write(str1+100)
+      // let str2="abc"
+      // //不是数字转换不了，返回NAN（NAN指非数字）；必须数字字符串才能转换
+      // str2=parseInt(str2)
+      // document.write(str2+100)
+      // let str3="10ab22c"
+      // //无NAN错误，从前往后转，前面是数字可转，后面一遇到非数字就舍弃
+      // str3=parseInt(str3)
+      // document.write(str3+100)
+      // //-------------------------------------------
+      // let A=100
+      // let B="100"
+      // document.write(A==B)//==不判断类型，只判断值，返回true
+      // document.write(A===B)//===判断类型和值都是否相等，返回false
+      // document.write(A||B)//A为真返回A，否则返回B
+      // //-------------------------------------------
+      // //函数 独立的一段代码 可以重复使用
+      // function fun(A,B){
+      //   return
+      // }
+      // //调用函数
+      // let num=fun(100,200)//返回undefined，相当于没有信息
+      // document.write(num)
+      // function fun1(){
+      //   alert("弹出")//弹出框 提示框
+      // }
+      // //匿名函数
+      // let fun2=function (){//变量相当于个容器，将匿名函数存入变量
+      //   alert("匿名函数")
+      // }
+      // fun2()
+      // //---------------------------------------------
+      // //数组
+      // let arr=new Array()
+      // let arr1=new Array(5)
+      // let arr2=[]//声明了一个空数组
+      // arr2[0]=100
+      // arr2[1]=200
+      // arr2[2]=300
+      // alert(arr2.length)
+      // alert(arr2[3])//下标越界，不会报错，返回undefined
+      // for(let i=0;i<arr2.length;i++){
+      //   document.write(arr2[i])
+      // }
+      // //这种模式循环，注意变量是下标（索引）
+      // for(let i in arr2){
+      //   document.write(i+"-")
+      //   document.write(arr2[i]+"-")
+      // }
+
+      //-----------数组的常用函数------------
+      let arr=[]
+      arr[0]=1
+      arr[1]=2
+      arr[2]=3
+      console.log(arr)//表示控制台输出显示
+      function fun(){
+        arr.push(400)//push(值)表示把值加到数据最后一位
+        arr.unshift(600)//把值加到最前面
+        let str=arr.join("--")//用“--”把数组拼接起来
+        console.log(arr)
+        console.log(str)
+      }
+
+      function del(){
+        arr.pop()//删除数组中的最后一位
+        arr.shift()//删除数组第一位
+        console.log(arr)
+      }
+
+      function fun1(){
+        arr.push(400)//push(值)表示把值加到数据最后一位
+        console.log(arr)
+        arr.splice(2,2)//splice(i,j)从第i个位置开始删除j个（不包含第i个）
+        console.log(arr)
+        arr.splice(2,3,800,900,700)//splice(i,j,k...)从第i个位置开始删除j个,再加入k...（把那j个替换为k...新元素）
+        console.log(arr)
+        arr.splice(2,0,800) //删0个，即直接在第2个位置后一个添加800
+        console.log(arr)
+      }
+
+
+
+
+    </script>
+</head>
+<body>
+  <button onclick="fun1()">按钮</button>
+  <button onclick="del()">删除</button>
+</body>
+</html>

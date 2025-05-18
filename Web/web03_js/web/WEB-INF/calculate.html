@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <input id = "numA">+<input id = "numB">=<span id = "sp"></span> <br><br>
+    <button onclick="btn()">计算</button>
+
+    <script>
+        function btn(){
+            if(numA.value==""){
+                alert("不能为空")
+                return//终止函数
+            }
+            //let A=numA.value//获取值都是字符串
+            let A=parseInt(numA.value)
+            let B=parseInt(numB.value)
+            sp.innerHTML=A+B //显示标签内容
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1796 @@
+{
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.6.6",
+   "mimetype": "text/x-python",
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "pygments_lexer": "ipython3",
+   "nbconvert_exporter": "python",
+   "file_extension": ".py"
+  },
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "sourceId": 3136,
+     "databundleVersionId": 26502,
+     "sourceType": "competition"
+    }
+   ],
+   "dockerImageVersionId": 25114,
+   "isInternetEnabled": false,
+   "language": "python",
+   "sourceType": "notebook",
+   "isGpuEnabled": false
+  }
+ },
+ "nbformat_minor": 4,
+ "nbformat": 4,
+ "cells": [
+  {
+   "cell_type": "code",
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "sns.set(style=\"darkgrid\")\n",
+    "\n",
+    "from sklearn.ensemble import RandomForestClassifier\n",
+    "from sklearn.preprocessing import OneHotEncoder, LabelEncoder, StandardScaler\n",
+    "from sklearn.metrics import roc_curve, auc\n",
+    "from sklearn.model_selection import StratifiedKFold\n",
+    "from sklearn import model_selection, metrics\n",
+    "from sklearn.linear_model import LogisticRegression\n",
+    "import string\n",
+    "import warnings\n",
+    "import time, datetime\n",
+    "warnings.filterwarnings('ignore')\n",
+    "\n",
+    "SEED = 42"
+   ],
+   "metadata": {
+    "_cell_guid": "79c7e3d0-c299-4dcb-8224-4455121ee9b0",
+    "_uuid": "d629ff2d2480ee46fbb7e2d37f6b5fab8052498a",
+    "_kg_hide-input": false,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:20.747046Z",
+     "iopub.execute_input": "2023-11-15T17:36:20.747399Z",
+     "iopub.status.idle": "2023-11-15T17:36:22.158988Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:20.747331Z",
+     "shell.execute_reply": "2023-11-15T17:36:22.15768Z"
+    },
+    "trusted": true,
+    "ExecuteTime": {
+     "end_time": "2024-11-12T09:03:38.025856Z",
+     "start_time": "2024-11-12T09:03:37.766499Z"
+    }
+   },
+   "outputs": [],
+   "execution_count": 1
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "def concat_df(train_data, test_data):\n",
+    "    return pd.concat([train_data, test_data], sort=True).reset_index(drop=True)\n",
+    "\n",
+    "def divide_df(all_data):\n",
+    "    return all_data.loc[:890], all_data.loc[891:].drop(['Survived'], axis=1)\n",
+    "\n",
+    "df_train = pd.read_csv('train.csv')\n",
+    "df_test = pd.read_csv('test.csv')\n",
+    "df_all = concat_df(df_train, df_test)\n",
+    "\n",
+    "df_train.name = 'Training Set'\n",
+    "df_test.name = 'Test Set'\n",
+    "df_all.name = 'All Set' \n",
+    "\n",
+    "dfs = [df_train, df_test]"
+   ],
+   "metadata": {
+    "_uuid": "467443fda7135a8ce89c4d537da3f3a8546e2384",
+    "_kg_hide-input": false,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:27.136101Z",
+     "iopub.execute_input": "2023-11-15T17:36:27.136456Z",
+     "iopub.status.idle": "2023-11-15T17:36:27.19092Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:27.136407Z",
+     "shell.execute_reply": "2023-11-15T17:36:27.189945Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## **Exploratory Data Analysis**"
+   ],
+   "metadata": {
+    "_uuid": "dfabd70ff1cbd50e3107727e5bb630aa59110d83"
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "print(df_train.info())\n",
+    "df_train"
+   ],
+   "metadata": {
+    "_uuid": "f02f321f8fd8b8c7c2a4aedb36ebe868ae51004e",
+    "_kg_hide-input": false,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:29.188282Z",
+     "iopub.execute_input": "2023-11-15T17:36:29.188922Z",
+     "iopub.status.idle": "2023-11-15T17:36:29.247206Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:29.188852Z",
+     "shell.execute_reply": "2023-11-15T17:36:29.246114Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "print(df_test.info())\n",
+    "df_test"
+   ],
+   "metadata": {
+    "_uuid": "851ccf74127831d31ea0d7273b686f9a7cf20eee",
+    "_kg_hide-input": false,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:29.507927Z",
+     "iopub.execute_input": "2023-11-15T17:36:29.508323Z",
+     "iopub.status.idle": "2023-11-15T17:36:29.552369Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:29.508262Z",
+     "shell.execute_reply": "2023-11-15T17:36:29.551294Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "print(df_all.info())\n",
+    "df_all"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **1.2 Missing Values**"
+   ],
+   "metadata": {
+    "_uuid": "3db8a853b0b33256f1b08f77d7edf0e9d1737d62"
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "def display_missing(df):    \n",
+    "    for col in df.columns.tolist():          \n",
+    "        print('{} column missing values: {}'.format(col, df[col].isnull().sum()))\n",
+    "    print('\\n')\n",
+    "    \n",
+    "for df in dfs:\n",
+    "    print('{}'.format(df.name))\n",
+    "    display_missing(df)"
+   ],
+   "metadata": {
+    "_uuid": "d4e8f7b72e2bd165cafa71d67c95f008e7c6101d",
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:30.351335Z",
+     "iopub.execute_input": "2023-11-15T17:36:30.351749Z",
+     "iopub.status.idle": "2023-11-15T17:36:30.374707Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:30.351679Z",
+     "shell.execute_reply": "2023-11-15T17:36:30.373626Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "#### **1.2.1 Age**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all_numeric = df_all.applymap(pd.to_numeric, errors='coerce')\n",
+    "\n",
+    "df_all_corr = df_all_numeric.corr().abs()\n",
+    "\n",
+    "df_all_corr = df_all_corr.unstack().sort_values(kind=\"quicksort\", ascending=False).reset_index()\n",
+    "df_all_corr.rename(columns={\"level_0\": \"Feature 1\", \"level_1\": \"Feature 2\", 0: 'Correlation Coefficient'}, inplace=True)\n",
+    "\n",
+    "result = df_all_corr[df_all_corr['Feature 1'] == 'Age']"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:31.19279Z",
+     "iopub.execute_input": "2023-11-15T17:36:31.193138Z",
+     "iopub.status.idle": "2023-11-15T17:36:31.223824Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:31.193082Z",
+     "shell.execute_reply": "2023-11-15T17:36:31.222723Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "In order to be more accurate, `Sex` feature is used as the second level of `groupby` while filling the missing `Age` values. As seen from below, `Pclass` and `Sex` groups have distinct median `Age` values. When passenger class increases, the median age for both males and females also increases. However, females tend to have slightly lower median `Age` than males. The median ages below are used for filling the missing values in `Age` feature."
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all['Age'] = pd.to_numeric(df_all['Age'], errors='coerce')\n",
+    "\n",
+    "median_age_by_pclass_sex = df_all.groupby(['Sex', 'Pclass'])['Age'].transform('median')\n",
+    "\n",
+    "df_all['Age'] = df_all['Age'].fillna(median_age_by_pclass_sex)\n",
+    "\n",
+    "for pclass in range(1, 4):\n",
+    "    for sex in ['female', 'male']:\n",
+    "        print('Median age of Pclass {} {}s: {}'.format(pclass, sex, median_age_by_pclass_sex[(df_all['Sex'] == sex) & (df_all['Pclass'] == pclass)].iloc[0]))\n",
+    "\n",
+    "print('Median age of all passengers: {}'.format(df_all['Age'].median()))"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:32.090505Z",
+     "iopub.execute_input": "2023-11-15T17:36:32.090992Z",
+     "iopub.status.idle": "2023-11-15T17:36:32.125663Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:32.090909Z",
+     "shell.execute_reply": "2023-11-15T17:36:32.124495Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "#### **1.2.2 Embarked**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all[df_all['Embarked'].isnull()]"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:33.203489Z",
+     "iopub.execute_input": "2023-11-15T17:36:33.203916Z",
+     "iopub.status.idle": "2023-11-15T17:36:33.243514Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:33.203844Z",
+     "shell.execute_reply": "2023-11-15T17:36:33.242528Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all['Embarked'] = df_all['Embarked'].fillna('S')"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:34.362358Z",
+     "iopub.execute_input": "2023-11-15T17:36:34.362762Z",
+     "iopub.status.idle": "2023-11-15T17:36:34.369641Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:34.362686Z",
+     "shell.execute_reply": "2023-11-15T17:36:34.367962Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "#### **1.2.3 Fare**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all[df_all['Fare'].isnull()]"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:35.090978Z",
+     "iopub.execute_input": "2023-11-15T17:36:35.091353Z",
+     "iopub.status.idle": "2023-11-15T17:36:35.129199Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:35.091299Z",
+     "shell.execute_reply": "2023-11-15T17:36:35.127365Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "med_fare = df_all.groupby(['Pclass', 'Parch', 'SibSp']).Fare.median()[3][0][0]\n",
+    "df_all['Fare'] = df_all['Fare'].fillna(med_fare)"
+   ],
+   "metadata": {
+    "_kg_hide-input": false,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:35.474139Z",
+     "iopub.execute_input": "2023-11-15T17:36:35.474528Z",
+     "iopub.status.idle": "2023-11-15T17:36:35.488361Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:35.474461Z",
+     "shell.execute_reply": "2023-11-15T17:36:35.487278Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "#### **1.2.4 Cabin**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all['Deck'] = df_all['Cabin'].apply(lambda s: s[0] if pd.notnull(s) else 'M')\n",
+    "\n",
+    "df_all_decks = df_all.groupby(['Deck', 'Pclass']).count().drop(columns=['Survived', 'Sex', 'Age', 'SibSp', 'Parch', \n",
+    "                                                                        'Fare', 'Embarked', 'Cabin', 'PassengerId', 'Ticket']).rename(columns={'Name': 'Count'}).transpose()\n",
+    "\n",
+    "def get_pclass_dist(df):\n",
+    "    \n",
+    "    deck_counts = {'A': {}, 'B': {}, 'C': {}, 'D': {}, 'E': {}, 'F': {}, 'G': {}, 'M': {}, 'T': {}}\n",
+    "    decks = df.columns.levels[0]    \n",
+    "    \n",
+    "    for deck in decks:\n",
+    "        for pclass in range(1, 4):\n",
+    "            try:\n",
+    "                count = df[deck][pclass][0]\n",
+    "                deck_counts[deck][pclass] = count \n",
+    "            except KeyError:\n",
+    "                deck_counts[deck][pclass] = 0\n",
+    "                \n",
+    "    df_decks = pd.DataFrame(deck_counts)    \n",
+    "    deck_percentages = {}\n",
+    "\n",
+    "    for col in df_decks.columns:\n",
+    "        deck_percentages[col] = [(count / df_decks[col].sum()) * 100 for count in df_decks[col]]\n",
+    "        \n",
+    "    return deck_counts, deck_percentages\n",
+    "\n",
+    "def display_pclass_dist(percentages):\n",
+    "    \n",
+    "    df_percentages = pd.DataFrame(percentages).transpose()\n",
+    "    deck_names = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'M', 'T')\n",
+    "    bar_count = np.arange(len(deck_names))  \n",
+    "    bar_width = 0.85\n",
+    "    \n",
+    "    pclass1 = df_percentages[0]\n",
+    "    pclass2 = df_percentages[1]\n",
+    "    pclass3 = df_percentages[2]\n",
+    "    \n",
+    "    plt.figure(figsize=(20, 10))\n",
+    "    plt.bar(bar_count, pclass1, color='#b5ffb9', edgecolor='white', width=bar_width, label='Passenger Class 1')\n",
+    "    plt.bar(bar_count, pclass2, bottom=pclass1, color='#f9bc86', edgecolor='white', width=bar_width, label='Passenger Class 2')\n",
+    "    plt.bar(bar_count, pclass3, bottom=pclass1 + pclass2, color='#a3acff', edgecolor='white', width=bar_width, label='Passenger Class 3')\n",
+    "\n",
+    "    plt.xlabel('Deck', size=15, labelpad=20)\n",
+    "    plt.ylabel('Passenger Class Percentage', size=15, labelpad=20)\n",
+    "    plt.xticks(bar_count, deck_names)    \n",
+    "    plt.tick_params(axis='x', labelsize=15)\n",
+    "    plt.tick_params(axis='y', labelsize=15)\n",
+    "    \n",
+    "    plt.legend(loc='upper left', bbox_to_anchor=(1, 1), prop={'size': 15})\n",
+    "    plt.title('Passenger Class Distribution in Decks', size=18, y=1.05)   \n",
+    "    \n",
+    "    plt.show()    \n",
+    "\n",
+    "all_deck_count, all_deck_per = get_pclass_dist(df_all_decks)\n",
+    "display_pclass_dist(all_deck_per)"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:36.404966Z",
+     "iopub.execute_input": "2023-11-15T17:36:36.405342Z",
+     "iopub.status.idle": "2023-11-15T17:36:37.307769Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:36.405284Z",
+     "shell.execute_reply": "2023-11-15T17:36:37.306547Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "* **100%** of **A**, **B** and **C** decks are 1st class passengers\n",
+    "* Deck **D** has **87%** 1st class and **13%** 2nd class passengers\n",
+    "* Deck **E** has **83%** 1st class, **10%** 2nd class and **7%** 3rd class passengers\n",
+    "* Deck **F** has **62%** 2nd class and **38%** 3rd class passengers\n",
+    "* **100%** of **G** deck are 3rd class passengers\n",
+    "* There is one person on the boat deck in **T** cabin and he is a 1st class passenger. **T** cabin passenger has the closest resemblance to **A** deck passengers so he is grouped with **A** deck\n",
+    "* Passengers labeled as **M** are the missing values in `Cabin` feature. I don't think it is possible to find those passengers' real `Deck` so I decided to use **M** like a deck"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "idx = df_all[df_all['Deck'] == 'T'].index\n",
+    "df_all.loc[idx, 'Deck'] = 'A'"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:37.315156Z",
+     "iopub.execute_input": "2023-11-15T17:36:37.315841Z",
+     "iopub.status.idle": "2023-11-15T17:36:37.325033Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:37.315754Z",
+     "shell.execute_reply": "2023-11-15T17:36:37.32388Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all_decks_survived = df_all.groupby(['Deck', 'Survived']).count().drop(columns=['Sex', 'Age', 'SibSp', 'Parch', 'Fare', \n",
+    "                                                                                   'Embarked', 'Pclass', 'Cabin', 'PassengerId', 'Ticket']).rename(columns={'Name':'Count'}).transpose()\n",
+    "\n",
+    "def get_survived_dist(df):\n",
+    "    \n",
+    "    surv_counts = {'A':{}, 'B':{}, 'C':{}, 'D':{}, 'E':{}, 'F':{}, 'G':{}, 'M':{}}\n",
+    "    decks = df.columns.levels[0]    \n",
+    "\n",
+    "    for deck in decks:\n",
+    "        for survive in range(0, 2):\n",
+    "            surv_counts[deck][survive] = df[deck][survive][0]\n",
+    "            \n",
+    "    df_surv = pd.DataFrame(surv_counts)\n",
+    "    surv_percentages = {}\n",
+    "\n",
+    "    for col in df_surv.columns:\n",
+    "        surv_percentages[col] = [(count / df_surv[col].sum()) * 100 for count in df_surv[col]]\n",
+    "        \n",
+    "    return surv_counts, surv_percentages\n",
+    "\n",
+    "def display_surv_dist(percentages):\n",
+    "    \n",
+    "    df_survived_percentages = pd.DataFrame(percentages).transpose()\n",
+    "    deck_names = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'M')\n",
+    "    bar_count = np.arange(len(deck_names))  \n",
+    "    bar_width = 0.85    \n",
+    "\n",
+    "    not_survived = df_survived_percentages[0]\n",
+    "    survived = df_survived_percentages[1]\n",
+    "    \n",
+    "    plt.figure(figsize=(20, 10))\n",
+    "    plt.bar(bar_count, not_survived, color='#b5ffb9', edgecolor='white', width=bar_width, label=\"Not Survived\")\n",
+    "    plt.bar(bar_count, survived, bottom=not_survived, color='#f9bc86', edgecolor='white', width=bar_width, label=\"Survived\")\n",
+    " \n",
+    "    plt.xlabel('Deck', size=15, labelpad=20)\n",
+    "    plt.ylabel('Survival Percentage', size=15, labelpad=20)\n",
+    "    plt.xticks(bar_count, deck_names)    \n",
+    "    plt.tick_params(axis='x', labelsize=15)\n",
+    "    plt.tick_params(axis='y', labelsize=15)\n",
+    "    \n",
+    "    plt.legend(loc='upper left', bbox_to_anchor=(1, 1), prop={'size': 15})\n",
+    "    plt.title('Survival Percentage in Decks', size=18, y=1.05)\n",
+    "    \n",
+    "    plt.show()\n",
+    "\n",
+    "all_surv_count, all_surv_per = get_survived_dist(df_all_decks_survived)\n",
+    "display_surv_dist(all_surv_per)"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:38.091639Z",
+     "iopub.execute_input": "2023-11-15T17:36:38.092525Z",
+     "iopub.status.idle": "2023-11-15T17:36:38.834841Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:38.092397Z",
+     "shell.execute_reply": "2023-11-15T17:36:38.833262Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all['Deck'] = df_all['Deck'].replace(['A', 'B', 'C'], 'ABC')\n",
+    "df_all['Deck'] = df_all['Deck'].replace(['D', 'E'], 'DE')\n",
+    "df_all['Deck'] = df_all['Deck'].replace(['F', 'G'], 'FG')\n",
+    "\n",
+    "df_all['Deck'].value_counts()"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:39.136239Z",
+     "iopub.execute_input": "2023-11-15T17:36:39.136571Z",
+     "iopub.status.idle": "2023-11-15T17:36:39.15298Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:39.136517Z",
+     "shell.execute_reply": "2023-11-15T17:36:39.151726Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "After filling the missing values in `Age`, `Embarked`, `Fare` and `Deck` features, there is no missing value left in both training and test set. `Cabin` is dropped because `Deck` feature is used instead of it."
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all.drop(['Cabin'], inplace=True, axis=1)\n",
+    "\n",
+    "df_train, df_test = divide_df(df_all)\n",
+    "dfs = [df_train, df_test]\n",
+    "\n",
+    "for df in dfs:\n",
+    "    display_missing(df)"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:40.029948Z",
+     "iopub.execute_input": "2023-11-15T17:36:40.030573Z",
+     "iopub.status.idle": "2023-11-15T17:36:40.055154Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:40.030521Z",
+     "shell.execute_reply": "2023-11-15T17:36:40.053206Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **1.3 Target Distribution**"
+   ],
+   "metadata": {
+    "_uuid": "83ed6dacdc116214381364c2b456a97253e708ef"
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "survived = df_train['Survived'].value_counts()[1]\n",
+    "not_survived = df_train['Survived'].value_counts()[0]\n",
+    "survived_per = survived / df_train.shape[0] * 100\n",
+    "not_survived_per = not_survived / df_train.shape[0] * 100\n",
+    "\n",
+    "print('{} of {} passengers survived and it is the {:.2f}% of the training set.'.format(survived, df_train.shape[0], survived_per))\n",
+    "print('{} of {} passengers didnt survive and it is the {:.2f}% of the training set.'.format(not_survived, df_train.shape[0], not_survived_per))\n",
+    "\n",
+    "plt.figure(figsize=(10, 8))\n",
+    "sns.countplot(df_train['Survived'])\n",
+    "\n",
+    "plt.xlabel('Survival', size=15, labelpad=15)\n",
+    "plt.ylabel('Passenger Count', size=15, labelpad=15)\n",
+    "plt.xticks((0, 1), ['Not Survived ({0:.2f}%)'.format(not_survived_per), 'Survived ({0:.2f}%)'.format(survived_per)])\n",
+    "plt.tick_params(axis='x', labelsize=13)\n",
+    "plt.tick_params(axis='y', labelsize=13)\n",
+    "\n",
+    "plt.title('Training Set Survival Distribution', size=15, y=1.05)\n",
+    "\n",
+    "plt.show()"
+   ],
+   "metadata": {
+    "_uuid": "c70aa13b7a552beb976574d52c1cd3da1cc1ee5c",
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:41.292337Z",
+     "iopub.execute_input": "2023-11-15T17:36:41.292748Z",
+     "iopub.status.idle": "2023-11-15T17:36:41.69849Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:41.292681Z",
+     "shell.execute_reply": "2023-11-15T17:36:41.697293Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **1.4 Correlations**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "non_numeric_cols = df_train.select_dtypes(exclude=[np.number]).columns\n",
+    "df_train_numeric = df_train.drop(non_numeric_cols, axis=1)\n",
+    "\n",
+    "df_train_corr = df_train_numeric.corr().abs().unstack().sort_values(kind=\"quicksort\", ascending=False).reset_index()\n",
+    "\n",
+    "df_train_corr.rename(columns={\"level_0\": \"Feature 1\", \"level_1\": \"Feature 2\", 0: 'Correlation Coefficient'}, inplace=True)\n",
+    "df_train_corr.drop(df_train_corr.iloc[1::2].index, inplace=True)\n",
+    "df_train_corr_nd = df_train_corr.drop(df_train_corr[df_train_corr['Correlation Coefficient'] == 1.0].index)\n",
+    "\n",
+    "non_numeric_cols_test = df_test.select_dtypes(exclude=[np.number]).columns\n",
+    "df_test_numeric = df_test.drop(non_numeric_cols_test, axis=1)\n",
+    "\n",
+    "df_test_corr = df_test_numeric.corr().abs().unstack().sort_values(kind=\"quicksort\", ascending=False).reset_index()\n",
+    "\n",
+    "df_test_corr.rename(columns={\"level_0\": \"Feature 1\", \"level_1\": \"Feature 2\", 0: 'Correlation Coefficient'}, inplace=True)\n",
+    "df_test_corr.drop(df_test_corr.iloc[1::2].index, inplace=True)\n",
+    "df_test_corr_nd = df_test_corr.drop(df_test_corr[df_test_corr['Correlation Coefficient'] == 1.0].index)"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:43.594836Z",
+     "iopub.execute_input": "2023-11-15T17:36:43.595495Z",
+     "iopub.status.idle": "2023-11-15T17:36:43.626208Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:43.595169Z",
+     "shell.execute_reply": "2023-11-15T17:36:43.625165Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "corr = df_train_corr_nd['Correlation Coefficient'] > 0.1\n",
+    "df_train_corr_nd[corr]"
+   ],
+   "metadata": {
+    "_kg_hide-input": false,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:44.012938Z",
+     "iopub.execute_input": "2023-11-15T17:36:44.013813Z",
+     "iopub.status.idle": "2023-11-15T17:36:44.038915Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:44.013267Z",
+     "shell.execute_reply": "2023-11-15T17:36:44.037457Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "corr = df_test_corr_nd['Correlation Coefficient'] > 0.1\n",
+    "df_test_corr_nd[corr]"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:44.408477Z",
+     "iopub.execute_input": "2023-11-15T17:36:44.409339Z",
+     "iopub.status.idle": "2023-11-15T17:36:44.434268Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:44.409244Z",
+     "shell.execute_reply": "2023-11-15T17:36:44.433285Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **1.5 Target Distribution in Features**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "#### **1.5.1 Continuous Features**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "cont_features = ['Age', 'Fare']\n",
+    "surv = df_train['Survived'] == 1\n",
+    "\n",
+    "fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(20, 20))\n",
+    "plt.subplots_adjust(right=1.5)\n",
+    "\n",
+    "for i, feature in enumerate(cont_features):    \n",
+    "    sns.distplot(df_train[~surv][feature], label='Not Survived', hist=True, color='#e74c3c', ax=axs[0][i])\n",
+    "    sns.distplot(df_train[surv][feature], label='Survived', hist=True, color='#2ecc71', ax=axs[0][i])\n",
+    "    \n",
+    "    sns.distplot(df_train[feature], label='Training Set', hist=False, color='#e74c3c', ax=axs[1][i])\n",
+    "    sns.distplot(df_test[feature], label='Test Set', hist=False, color='#2ecc71', ax=axs[1][i])\n",
+    "    \n",
+    "    axs[0][i].set_xlabel('')\n",
+    "    axs[1][i].set_xlabel('')\n",
+    "    \n",
+    "    for j in range(2):        \n",
+    "        axs[i][j].tick_params(axis='x', labelsize=20)\n",
+    "        axs[i][j].tick_params(axis='y', labelsize=20)\n",
+    "    \n",
+    "    axs[0][i].legend(loc='upper right', prop={'size': 20})\n",
+    "    axs[1][i].legend(loc='upper right', prop={'size': 20})\n",
+    "    axs[0][i].set_title('Distribution of Survival in {}'.format(feature), size=20, y=1.05)\n",
+    "\n",
+    "axs[1][0].set_title('Distribution of {} Feature'.format('Age'), size=20, y=1.05)\n",
+    "axs[1][1].set_title('Distribution of {} Feature'.format('Fare'), size=20, y=1.05)\n",
+    "        \n",
+    "plt.show()"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:46.610276Z",
+     "iopub.execute_input": "2023-11-15T17:36:46.610698Z",
+     "iopub.status.idle": "2023-11-15T17:36:48.942632Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:46.610652Z",
+     "shell.execute_reply": "2023-11-15T17:36:48.941341Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "#### **1.5.2 Categorical Features**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "cat_features = ['Embarked', 'Parch', 'Pclass', 'Sex', 'SibSp', 'Deck']\n",
+    "\n",
+    "fig, axs = plt.subplots(ncols=2, nrows=3, figsize=(20, 20))\n",
+    "plt.subplots_adjust(right=1.5, top=1.25)\n",
+    "\n",
+    "for i, feature in enumerate(cat_features, 1):    \n",
+    "    plt.subplot(2, 3, i)\n",
+    "    sns.countplot(x=feature, hue='Survived', data=df_train)\n",
+    "    \n",
+    "    plt.xlabel('{}'.format(feature), size=20, labelpad=15)\n",
+    "    plt.ylabel('Passenger Count', size=20, labelpad=15)    \n",
+    "    plt.tick_params(axis='x', labelsize=20)\n",
+    "    plt.tick_params(axis='y', labelsize=20)\n",
+    "    \n",
+    "    plt.legend(['Not Survived', 'Survived'], loc='upper center', prop={'size': 18})\n",
+    "    plt.title('Count of Survival in {} Feature'.format(feature), size=20, y=1.05)\n",
+    "\n",
+    "plt.show()"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:48.944211Z",
+     "iopub.execute_input": "2023-11-15T17:36:48.944494Z",
+     "iopub.status.idle": "2023-11-15T17:36:51.516244Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:48.944444Z",
+     "shell.execute_reply": "2023-11-15T17:36:51.514953Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **1.6 Conclusion**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all = concat_df(df_train, df_test)\n",
+    "df_all.head()"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:51.518111Z",
+     "iopub.execute_input": "2023-11-15T17:36:51.518403Z",
+     "iopub.status.idle": "2023-11-15T17:36:51.567536Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:51.518352Z",
+     "shell.execute_reply": "2023-11-15T17:36:51.566153Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## **2. Feature Engineering**"
+   ],
+   "metadata": {
+    "_uuid": "e14506a365afef0af44894e46642acf27ac2545f"
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **2.1 Binning Continuous Features**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "#### **2.1.1 Fare**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all['Fare'] = pd.qcut(df_all['Fare'], 13)"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:53.351124Z",
+     "iopub.execute_input": "2023-11-15T17:36:53.351485Z",
+     "iopub.status.idle": "2023-11-15T17:36:53.366671Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:53.351422Z",
+     "shell.execute_reply": "2023-11-15T17:36:53.365802Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "fig, axs = plt.subplots(figsize=(22, 9))\n",
+    "sns.countplot(x='Fare', hue='Survived', data=df_all)\n",
+    "\n",
+    "plt.xlabel('Fare', size=15, labelpad=20)\n",
+    "plt.ylabel('Passenger Count', size=15, labelpad=20)\n",
+    "plt.tick_params(axis='x', labelsize=10)\n",
+    "plt.tick_params(axis='y', labelsize=15)\n",
+    "\n",
+    "plt.legend(['Not Survived', 'Survived'], loc='upper right', prop={'size': 15})\n",
+    "plt.title('Count of Survival in {} Feature'.format('Fare'), size=15, y=1.05)\n",
+    "\n",
+    "plt.show()"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:36:59.088748Z",
+     "iopub.execute_input": "2023-11-15T17:36:59.089464Z",
+     "iopub.status.idle": "2023-11-15T17:36:59.833731Z",
+     "shell.execute_reply.started": "2023-11-15T17:36:59.089404Z",
+     "shell.execute_reply": "2023-11-15T17:36:59.832872Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "#### **2.1.2 Age**\n",
+    "`Age` feature has a normal distribution with some spikes and bumps and **10** quantile based bins are used for `Age`. The first bin has the highest survival rate and 4th bin has the lowest survival rate. Those were the biggest spikes in the distribution. There is also an unusual group **(34.0, 40.0]** with high survival rate that is captured in this process."
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all['Age'] = pd.qcut(df_all['Age'], 10)"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:01.195223Z",
+     "iopub.execute_input": "2023-11-15T17:37:01.195688Z",
+     "iopub.status.idle": "2023-11-15T17:37:01.212962Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:01.195577Z",
+     "shell.execute_reply": "2023-11-15T17:37:01.211097Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "fig, axs = plt.subplots(figsize=(22, 9))\n",
+    "sns.countplot(x='Age', hue='Survived', data=df_all)\n",
+    "\n",
+    "plt.xlabel('Age', size=15, labelpad=20)\n",
+    "plt.ylabel('Passenger Count', size=15, labelpad=20)\n",
+    "plt.tick_params(axis='x', labelsize=15)\n",
+    "plt.tick_params(axis='y', labelsize=15)\n",
+    "\n",
+    "plt.legend(['Not Survived', 'Survived'], loc='upper right', prop={'size': 15})\n",
+    "plt.title('Survival Counts in {} Feature'.format('Age'), size=15, y=1.05)\n",
+    "\n",
+    "plt.show()"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:02.006541Z",
+     "iopub.execute_input": "2023-11-15T17:37:02.007521Z",
+     "iopub.status.idle": "2023-11-15T17:37:02.729738Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:02.007401Z",
+     "shell.execute_reply": "2023-11-15T17:37:02.728386Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **2.2 Frequency Encoding**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all['Family_Size'] = df_all['SibSp'] + df_all['Parch'] + 1\n",
+    "\n",
+    "fig, axs = plt.subplots(figsize=(20, 20), ncols=2, nrows=2)\n",
+    "plt.subplots_adjust(right=1.5)\n",
+    "\n",
+    "sns.barplot(x=df_all['Family_Size'].value_counts().index, y=df_all['Family_Size'].value_counts().values, ax=axs[0][0])\n",
+    "sns.countplot(x='Family_Size', hue='Survived', data=df_all, ax=axs[0][1])\n",
+    "\n",
+    "axs[0][0].set_title('Family Size Feature Value Counts', size=20, y=1.05)\n",
+    "axs[0][1].set_title('Survival Counts in Family Size ', size=20, y=1.05)\n",
+    "\n",
+    "family_map = {1: 'Alone', 2: 'Small', 3: 'Small', 4: 'Small', 5: 'Medium', 6: 'Medium', 7: 'Large', 8: 'Large', 11: 'Large'}\n",
+    "df_all['Family_Size_Grouped'] = df_all['Family_Size'].map(family_map)\n",
+    "\n",
+    "sns.barplot(x=df_all['Family_Size_Grouped'].value_counts().index, y=df_all['Family_Size_Grouped'].value_counts().values, ax=axs[1][0])\n",
+    "sns.countplot(x='Family_Size_Grouped', hue='Survived', data=df_all, ax=axs[1][1])\n",
+    "\n",
+    "axs[1][0].set_title('Family Size Feature Value Counts After Grouping', size=20, y=1.05)\n",
+    "axs[1][1].set_title('Survival Counts in Family Size After Grouping', size=20, y=1.05)\n",
+    "\n",
+    "for i in range(2):\n",
+    "    axs[i][1].legend(['Not Survived', 'Survived'], loc='upper right', prop={'size': 20})\n",
+    "    for j in range(2):\n",
+    "        axs[i][j].tick_params(axis='x', labelsize=20)\n",
+    "        axs[i][j].tick_params(axis='y', labelsize=20)\n",
+    "        axs[i][j].set_xlabel('')\n",
+    "        axs[i][j].set_ylabel('')\n",
+    "\n",
+    "plt.show()"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:03.332145Z",
+     "iopub.execute_input": "2023-11-15T17:37:03.332538Z",
+     "iopub.status.idle": "2023-11-15T17:37:05.242937Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:03.332471Z",
+     "shell.execute_reply": "2023-11-15T17:37:05.24128Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all['Ticket_Frequency'] = df_all.groupby('Ticket')['Ticket'].transform('count')"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:05.245036Z",
+     "iopub.execute_input": "2023-11-15T17:37:05.245479Z",
+     "iopub.status.idle": "2023-11-15T17:37:05.259956Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:05.24541Z",
+     "shell.execute_reply": "2023-11-15T17:37:05.258172Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "fig, axs = plt.subplots(figsize=(12, 9))\n",
+    "sns.countplot(x='Ticket_Frequency', hue='Survived', data=df_all)\n",
+    "\n",
+    "plt.xlabel('Ticket Frequency', size=15, labelpad=20)\n",
+    "plt.ylabel('Passenger Count', size=15, labelpad=20)\n",
+    "plt.tick_params(axis='x', labelsize=15)\n",
+    "plt.tick_params(axis='y', labelsize=15)\n",
+    "\n",
+    "plt.legend(['Not Survived', 'Survived'], loc='upper right', prop={'size': 15})\n",
+    "plt.title('Count of Survival in {} Feature'.format('Ticket Frequency'), size=15, y=1.05)\n",
+    "\n",
+    "plt.show()"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:05.261992Z",
+     "iopub.execute_input": "2023-11-15T17:37:05.262385Z",
+     "iopub.status.idle": "2023-11-15T17:37:06.01884Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:05.26232Z",
+     "shell.execute_reply": "2023-11-15T17:37:06.018033Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **2.3 Title & Is Married**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all['Title'] = df_all['Name'].str.split(', ', expand=True)[1].str.split('.', expand=True)[0]\n",
+    "df_all['Is_Married'] = 0\n",
+    "df_all['Is_Married'].loc[df_all['Title'] == 'Mrs'] = 1"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:06.80677Z",
+     "iopub.execute_input": "2023-11-15T17:37:06.80736Z",
+     "iopub.status.idle": "2023-11-15T17:37:06.951614Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:06.80731Z",
+     "shell.execute_reply": "2023-11-15T17:37:06.950546Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "fig, axs = plt.subplots(nrows=2, figsize=(20, 20))\n",
+    "sns.barplot(x=df_all['Title'].value_counts().index, y=df_all['Title'].value_counts().values, ax=axs[0])\n",
+    "\n",
+    "axs[0].tick_params(axis='x', labelsize=10)\n",
+    "axs[1].tick_params(axis='x', labelsize=15)\n",
+    "\n",
+    "for i in range(2):    \n",
+    "    axs[i].tick_params(axis='y', labelsize=15)\n",
+    "\n",
+    "axs[0].set_title('Title Feature Value Counts', size=20, y=1.05)\n",
+    "\n",
+    "df_all['Title'] = df_all['Title'].replace(['Miss', 'Mrs','Ms', 'Mlle', 'Lady', 'Mme', 'the Countess', 'Dona'], 'Miss/Mrs/Ms')\n",
+    "df_all['Title'] = df_all['Title'].replace(['Dr', 'Col', 'Major', 'Jonkheer', 'Capt', 'Sir', 'Don', 'Rev'], 'Dr/Military/Noble/Clergy')\n",
+    "\n",
+    "sns.barplot(x=df_all['Title'].value_counts().index, y=df_all['Title'].value_counts().values, ax=axs[1])\n",
+    "axs[1].set_title('Title Feature Value Counts After Grouping', size=20, y=1.05)\n",
+    "\n",
+    "plt.show()"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:07.460816Z",
+     "iopub.execute_input": "2023-11-15T17:37:07.461391Z",
+     "iopub.status.idle": "2023-11-15T17:37:08.739243Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:07.46134Z",
+     "shell.execute_reply": "2023-11-15T17:37:08.737879Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **2.4 Target Encoding**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "def extract_surname(data):    \n",
+    "    \n",
+    "    families = []\n",
+    "    \n",
+    "    for i in range(len(data)):        \n",
+    "        name = data.iloc[i]\n",
+    "\n",
+    "        if '(' in name:\n",
+    "            name_no_bracket = name.split('(')[0] \n",
+    "        else:\n",
+    "            name_no_bracket = name\n",
+    "            \n",
+    "        family = name_no_bracket.split(',')[0]\n",
+    "        title = name_no_bracket.split(',')[1].strip().split(' ')[0]\n",
+    "        \n",
+    "        for c in string.punctuation:\n",
+    "            family = family.replace(c, '').strip()\n",
+    "            \n",
+    "        families.append(family)\n",
+    "            \n",
+    "    return families\n",
+    "\n",
+    "df_all['Family'] = extract_surname(df_all['Name'])\n",
+    "df_train = df_all.loc[:890]\n",
+    "df_test = df_all.loc[891:]\n",
+    "dfs = [df_train, df_test]"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:08.801661Z",
+     "iopub.execute_input": "2023-11-15T17:37:08.802244Z",
+     "iopub.status.idle": "2023-11-15T17:37:08.866838Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:08.802174Z",
+     "shell.execute_reply": "2023-11-15T17:37:08.865645Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "non_unique_families = [x for x in df_train['Family'].unique() if x in df_test['Family'].unique()]\n",
+    "non_unique_tickets = [x for x in df_train['Ticket'].unique() if x in df_test['Ticket'].unique()]\n",
+    "\n",
+    "numeric_cols_family = ['Survived', 'Family_Size']\n",
+    "numeric_cols_ticket = ['Survived', 'Ticket_Frequency']\n",
+    "\n",
+    "df_family_survival_rate = df_train.groupby('Family')[numeric_cols_family].median()\n",
+    "df_ticket_survival_rate = df_train.groupby('Ticket')[numeric_cols_ticket].median()\n",
+    "\n",
+    "family_rates = {}\n",
+    "ticket_rates = {}\n",
+    "\n",
+    "for i in range(len(df_family_survival_rate)):\n",
+    "    if df_family_survival_rate.index[i] in non_unique_families and df_family_survival_rate.iloc[i, 1] > 1:\n",
+    "        family_rates[df_family_survival_rate.index[i]] = df_family_survival_rate.iloc[i, 0]\n",
+    "\n",
+    "for i in range(len(df_ticket_survival_rate)):\n",
+    "    if df_ticket_survival_rate.index[i] in non_unique_tickets and df_ticket_survival_rate.iloc[i, 1] > 1:\n",
+    "        ticket_rates[df_ticket_survival_rate.index[i]] = df_ticket_survival_rate.iloc[i, 0]"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:09.989119Z",
+     "iopub.execute_input": "2023-11-15T17:37:09.989691Z",
+     "iopub.status.idle": "2023-11-15T17:37:10.301192Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:09.98962Z",
+     "shell.execute_reply": "2023-11-15T17:37:10.300149Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "mean_survival_rate = np.mean(df_train['Survived'])\n",
+    "\n",
+    "train_family_survival_rate = []\n",
+    "train_family_survival_rate_NA = []\n",
+    "test_family_survival_rate = []\n",
+    "test_family_survival_rate_NA = []\n",
+    "\n",
+    "for i in range(len(df_train)):\n",
+    "    if df_train['Family'][i] in family_rates:\n",
+    "        train_family_survival_rate.append(family_rates[df_train['Family'][i]])\n",
+    "        train_family_survival_rate_NA.append(1)\n",
+    "    else:\n",
+    "        train_family_survival_rate.append(mean_survival_rate)\n",
+    "        train_family_survival_rate_NA.append(0)\n",
+    "        \n",
+    "for i in range(len(df_test)):\n",
+    "    if df_test['Family'].iloc[i] in family_rates:\n",
+    "        test_family_survival_rate.append(family_rates[df_test['Family'].iloc[i]])\n",
+    "        test_family_survival_rate_NA.append(1)\n",
+    "    else:\n",
+    "        test_family_survival_rate.append(mean_survival_rate)\n",
+    "        test_family_survival_rate_NA.append(0)\n",
+    "        \n",
+    "df_train['Family_Survival_Rate'] = train_family_survival_rate\n",
+    "df_train['Family_Survival_Rate_NA'] = train_family_survival_rate_NA\n",
+    "df_test['Family_Survival_Rate'] = test_family_survival_rate\n",
+    "df_test['Family_Survival_Rate_NA'] = test_family_survival_rate_NA\n",
+    "\n",
+    "train_ticket_survival_rate = []\n",
+    "train_ticket_survival_rate_NA = []\n",
+    "test_ticket_survival_rate = []\n",
+    "test_ticket_survival_rate_NA = []\n",
+    "\n",
+    "for i in range(len(df_train)):\n",
+    "    if df_train['Ticket'][i] in ticket_rates:\n",
+    "        train_ticket_survival_rate.append(ticket_rates[df_train['Ticket'][i]])\n",
+    "        train_ticket_survival_rate_NA.append(1)\n",
+    "    else:\n",
+    "        train_ticket_survival_rate.append(mean_survival_rate)\n",
+    "        train_ticket_survival_rate_NA.append(0)\n",
+    "        \n",
+    "for i in range(len(df_test)):\n",
+    "    if df_test['Ticket'].iloc[i] in ticket_rates:\n",
+    "        test_ticket_survival_rate.append(ticket_rates[df_test['Ticket'].iloc[i]])\n",
+    "        test_ticket_survival_rate_NA.append(1)\n",
+    "    else:\n",
+    "        test_ticket_survival_rate.append(mean_survival_rate)\n",
+    "        test_ticket_survival_rate_NA.append(0)\n",
+    "        \n",
+    "df_train['Ticket_Survival_Rate'] = train_ticket_survival_rate\n",
+    "df_train['Ticket_Survival_Rate_NA'] = train_ticket_survival_rate_NA\n",
+    "df_test['Ticket_Survival_Rate'] = test_ticket_survival_rate\n",
+    "df_test['Ticket_Survival_Rate_NA'] = test_ticket_survival_rate_NA"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:10.502214Z",
+     "iopub.execute_input": "2023-11-15T17:37:10.502832Z",
+     "iopub.status.idle": "2023-11-15T17:37:11.175731Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:10.50276Z",
+     "shell.execute_reply": "2023-11-15T17:37:11.174748Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "for df in [df_train, df_test]:\n",
+    "    df['Survival_Rate'] = (df['Ticket_Survival_Rate'] + df['Family_Survival_Rate']) / 2\n",
+    "    df['Survival_Rate_NA'] = (df['Ticket_Survival_Rate_NA'] + df['Family_Survival_Rate_NA']) / 2    "
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:11.177538Z",
+     "iopub.execute_input": "2023-11-15T17:37:11.178108Z",
+     "iopub.status.idle": "2023-11-15T17:37:11.575236Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:11.177875Z",
+     "shell.execute_reply": "2023-11-15T17:37:11.573975Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **2.5 Feature Transformation**"
+   ],
+   "metadata": {
+    "_uuid": "b39a06d42b89d64f59f51a21dabdc5fe27fdcdaa"
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "#### **2.5.1 Label Encoding Non-Numerical Features**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "non_numeric_features = ['Embarked', 'Sex', 'Deck', 'Title', 'Family_Size_Grouped', 'Age', 'Fare']\n",
+    "\n",
+    "for df in dfs:\n",
+    "    for feature in non_numeric_features:        \n",
+    "        df[feature] = LabelEncoder().fit_transform(df[feature])"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:13.760747Z",
+     "iopub.execute_input": "2023-11-15T17:37:13.761109Z",
+     "iopub.status.idle": "2023-11-15T17:37:14.759955Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:13.761045Z",
+     "shell.execute_reply": "2023-11-15T17:37:14.75921Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "#### **2.5.2 One-Hot Encoding the Categorical Features**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "cat_features = ['Pclass', 'Sex', 'Deck', 'Embarked', 'Title', 'Family_Size_Grouped']\n",
+    "encoded_features = []\n",
+    "\n",
+    "for df in dfs:\n",
+    "    for feature in cat_features:\n",
+    "        encoded_feat = OneHotEncoder().fit_transform(df[feature].values.reshape(-1, 1)).toarray()\n",
+    "        n = df[feature].nunique()\n",
+    "        cols = ['{}_{}'.format(feature, n) for n in range(1, n + 1)]\n",
+    "        encoded_df = pd.DataFrame(encoded_feat, columns=cols)\n",
+    "        encoded_df.index = df.index\n",
+    "        encoded_features.append(encoded_df)\n",
+    "\n",
+    "df_train = pd.concat([df_train, *encoded_features[:6]], axis=1)\n",
+    "df_test = pd.concat([df_test, *encoded_features[6:]], axis=1)"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:15.550533Z",
+     "iopub.execute_input": "2023-11-15T17:37:15.550925Z",
+     "iopub.status.idle": "2023-11-15T17:37:15.60408Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:15.55085Z",
+     "shell.execute_reply": "2023-11-15T17:37:15.602996Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **2.6 Conclusion**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "df_all = concat_df(df_train, df_test)\n",
+    "drop_cols = ['Deck', 'Embarked', 'Family', 'Family_Size', 'Family_Size_Grouped', 'Survived',\n",
+    "             'Name', 'Parch', 'PassengerId', 'Pclass', 'Sex', 'SibSp', 'Ticket', 'Title',\n",
+    "            'Ticket_Survival_Rate', 'Family_Survival_Rate', 'Ticket_Survival_Rate_NA', 'Family_Survival_Rate_NA']\n",
+    "\n",
+    "df_all.drop(columns=drop_cols, inplace=True)\n",
+    "\n",
+    "df_all.head()"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:16.65146Z",
+     "iopub.execute_input": "2023-11-15T17:37:16.651912Z",
+     "iopub.status.idle": "2023-11-15T17:37:16.741366Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:16.651849Z",
+     "shell.execute_reply": "2023-11-15T17:37:16.740035Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## **3. Model**"
+   ],
+   "metadata": {
+    "_uuid": "1b3d47212b52113b53a3e6d0d0a4ee08aa97b02f"
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "X_train = StandardScaler().fit_transform(df_train.drop(columns=drop_cols))\n",
+    "y_train = df_train['Survived'].values\n",
+    "X_test = StandardScaler().fit_transform(df_test.drop(columns=drop_cols))\n",
+    "\n",
+    "print('X_train shape: {}'.format(X_train.shape))\n",
+    "print('y_train shape: {}'.format(y_train.shape))\n",
+    "print('X_test shape: {}'.format(X_test.shape))"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:17.977082Z",
+     "iopub.execute_input": "2023-11-15T17:37:17.977451Z",
+     "iopub.status.idle": "2023-11-15T17:37:17.998918Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:17.977397Z",
+     "shell.execute_reply": "2023-11-15T17:37:17.997404Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **3.1 Random Forest**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "single_best_model = RandomForestClassifier(criterion='gini', \n",
+    "                                           n_estimators=1100,\n",
+    "                                           max_depth=5,\n",
+    "                                           min_samples_split=4,\n",
+    "                                           min_samples_leaf=5,\n",
+    "                                           max_features='auto',\n",
+    "                                           oob_score=True,\n",
+    "                                           random_state=SEED,\n",
+    "                                           n_jobs=-1,\n",
+    "                                           verbose=1)\n",
+    "\n",
+    "leaderboard_model = RandomForestClassifier(criterion='gini',\n",
+    "                                           n_estimators=1750,\n",
+    "                                           max_depth=7,\n",
+    "                                           min_samples_split=6,\n",
+    "                                           min_samples_leaf=6,\n",
+    "                                           max_features='auto',\n",
+    "                                           oob_score=True,\n",
+    "                                           random_state=SEED,\n",
+    "                                           n_jobs=-1,\n",
+    "                                           verbose=1) "
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:19.724909Z",
+     "iopub.execute_input": "2023-11-15T17:37:19.725517Z",
+     "iopub.status.idle": "2023-11-15T17:37:19.736004Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:19.725461Z",
+     "shell.execute_reply": "2023-11-15T17:37:19.734972Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "N = 5\n",
+    "oob = 0\n",
+    "probs = pd.DataFrame(np.zeros((len(X_test), N * 2)), columns=['Fold_{}_Prob_{}'.format(i, j) for i in range(1, N + 1) for j in range(2)])\n",
+    "importances = pd.DataFrame(np.zeros((X_train.shape[1], N)), columns=['Fold_{}'.format(i) for i in range(1, N + 1)], index=df_all.columns)\n",
+    "fprs, tprs, scores = [], [], []\n",
+    "\n",
+    "skf = StratifiedKFold(n_splits=N, random_state=N, shuffle=True)\n",
+    "\n",
+    "for fold, (trn_idx, val_idx) in enumerate(skf.split(X_train, y_train), 1):\n",
+    "    print('Fold {}\\n'.format(fold))\n",
+    "    \n",
+    "    leaderboard_model.fit(X_train[trn_idx], y_train[trn_idx])\n",
+    "    \n",
+    "    trn_fpr, trn_tpr, trn_thresholds = roc_curve(y_train[trn_idx], leaderboard_model.predict_proba(X_train[trn_idx])[:, 1])\n",
+    "    trn_auc_score = auc(trn_fpr, trn_tpr)\n",
+    "    val_fpr, val_tpr, val_thresholds = roc_curve(y_train[val_idx], leaderboard_model.predict_proba(X_train[val_idx])[:, 1])\n",
+    "    val_auc_score = auc(val_fpr, val_tpr)  \n",
+    "      \n",
+    "    scores.append((trn_auc_score, val_auc_score))\n",
+    "    fprs.append(val_fpr)\n",
+    "    tprs.append(val_tpr)\n",
+    "    \n",
+    "    probs.loc[:, 'Fold_{}_Prob_0'.format(fold)] = leaderboard_model.predict_proba(X_test)[:, 0]\n",
+    "    probs.loc[:, 'Fold_{}_Prob_1'.format(fold)] = leaderboard_model.predict_proba(X_test)[:, 1]\n",
+    "    importances.iloc[:, fold - 1] = leaderboard_model.feature_importances_\n",
+    "        \n",
+    "    oob += leaderboard_model.oob_score_ / N\n",
+    "    print('Fold {} OOB Score: {}\\n'.format(fold, leaderboard_model.oob_score_))   \n",
+    "    \n",
+    "print('Average OOB Score: {}'.format(oob))"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:20.924049Z",
+     "iopub.execute_input": "2023-11-15T17:37:20.924715Z",
+     "iopub.status.idle": "2023-11-15T17:37:55.332032Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:20.92459Z",
+     "shell.execute_reply": "2023-11-15T17:37:55.330854Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **3.2 Feature Importance**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "importances['Mean_Importance'] = importances.mean(axis=1)\n",
+    "importances.sort_values(by='Mean_Importance', inplace=True, ascending=False)\n",
+    "\n",
+    "plt.figure(figsize=(15, 20))\n",
+    "sns.barplot(x='Mean_Importance', y=importances.index, data=importances)\n",
+    "\n",
+    "plt.xlabel('')\n",
+    "plt.tick_params(axis='x', labelsize=15)\n",
+    "plt.tick_params(axis='y', labelsize=15)\n",
+    "plt.title('Random Forest Classifier Mean Feature Importance Between Folds', size=15)\n",
+    "\n",
+    "plt.show()"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:37:59.133783Z",
+     "iopub.execute_input": "2023-11-15T17:37:59.134198Z",
+     "iopub.status.idle": "2023-11-15T17:38:00.159286Z",
+     "shell.execute_reply.started": "2023-11-15T17:37:59.134128Z",
+     "shell.execute_reply": "2023-11-15T17:38:00.158296Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **3.3 ROC Curve**"
+   ],
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "def plot_roc_curve(fprs, tprs):\n",
+    "    \n",
+    "    tprs_interp = []\n",
+    "    aucs = []\n",
+    "    mean_fpr = np.linspace(0, 1, 100)\n",
+    "    f, ax = plt.subplots(figsize=(15, 15))\n",
+    "    \n",
+    "    for i, (fpr, tpr) in enumerate(zip(fprs, tprs), 1):\n",
+    "        tprs_interp.append(np.interp(mean_fpr, fpr, tpr))\n",
+    "        tprs_interp[-1][0] = 0.0\n",
+    "        roc_auc = auc(fpr, tpr)\n",
+    "        aucs.append(roc_auc)\n",
+    "        ax.plot(fpr, tpr, lw=1, alpha=0.3, label='ROC Fold {} (AUC = {:.3f})'.format(i, roc_auc))\n",
+    "        \n",
+    "    plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r', alpha=0.8, label='Random Guessing')\n",
+    "    \n",
+    "    mean_tpr = np.mean(tprs_interp, axis=0)\n",
+    "    mean_tpr[-1] = 1.0\n",
+    "    mean_auc = auc(mean_fpr, mean_tpr)\n",
+    "    std_auc = np.std(aucs)\n",
+    "    \n",
+    "    ax.plot(mean_fpr, mean_tpr, color='b', label='Mean ROC (AUC = {:.3f} $\\pm$ {:.3f})'.format(mean_auc, std_auc), lw=2, alpha=0.8)\n",
+    "    \n",
+    "    std_tpr = np.std(tprs_interp, axis=0)\n",
+    "    tprs_upper = np.minimum(mean_tpr + std_tpr, 1)\n",
+    "    tprs_lower = np.maximum(mean_tpr - std_tpr, 0)\n",
+    "    ax.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2, label='$\\pm$ 1 std. dev.')\n",
+    "    \n",
+    "    ax.set_xlabel('False Positive Rate', size=15, labelpad=20)\n",
+    "    ax.set_ylabel('True Positive Rate', size=15, labelpad=20)\n",
+    "    ax.tick_params(axis='x', labelsize=15)\n",
+    "    ax.tick_params(axis='y', labelsize=15)\n",
+    "    ax.set_xlim([-0.05, 1.05])\n",
+    "    ax.set_ylim([-0.05, 1.05])\n",
+    "\n",
+    "    ax.set_title('ROC Curves of Folds', size=20, y=1.02)\n",
+    "    ax.legend(loc='lower right', prop={'size': 13})\n",
+    "    \n",
+    "    plt.show()\n",
+    "\n",
+    "plot_roc_curve(fprs, tprs)"
+   ],
+   "metadata": {
+    "_kg_hide-input": true,
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:38:18.117668Z",
+     "iopub.execute_input": "2023-11-15T17:38:18.118308Z",
+     "iopub.status.idle": "2023-11-15T17:38:19.112153Z",
+     "shell.execute_reply.started": "2023-11-15T17:38:18.118234Z",
+     "shell.execute_reply": "2023-11-15T17:38:19.110814Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **3.4 Logistic Regression**"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "def fit_ml_algo(algo, X_train,Y_train,X_test, cv):\n",
+    "    model = algo.fit(X_train, Y_train)\n",
+    "    acc = round(model.score(X_train, Y_train) * 100, 2)\n",
+    "    \n",
+    "    Y_pred=algo.predict(X_test)\n",
+    "    train_pred = model_selection.cross_val_predict(algo, \n",
+    "                                                  X_train, \n",
+    "                                                  Y_train, \n",
+    "                                                  cv=cv, \n",
+    "                                                  n_jobs = -1)\n",
+    "    acc_cv = round(metrics.accuracy_score(Y_train, train_pred) * 100, 2)\n",
+    "    \n",
+    "    return train_pred, acc, acc_cv,Y_pred"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "from sklearn.preprocessing import StandardScaler, LabelEncoder\n",
+    "\n",
+    "X_test_numeric = df_test.select_dtypes(include=['number'])\n",
+    "\n",
+    "for column in df_test.select_dtypes(include=['object']).columns:\n",
+    "    X_train[column] = X_train[column].astype(str)\n",
+    "    df_test[column] = df_test[column].astype(str)\n",
+    "\n",
+    "    combined_categories = pd.concat([X_train[column], df_test[column]])\n",
+    "    label_encoder = LabelEncoder().fit(combined_categories)\n",
+    "    \n",
+    "    X_train[column] = label_encoder.transform(X_train[column])\n",
+    "    df_test[column] = label_encoder.transform(df_test[column])\n",
+    "\n",
+    "X_test_numeric = X_test_numeric[X_train.select_dtypes(include=['number']).columns]\n",
+    "\n",
+    "scaler = StandardScaler()\n",
+    "X_train_standardized = scaler.fit_transform(X_train.select_dtypes(include=['number']))\n",
+    "X_test_standardized = scaler.transform(X_test_numeric)\n",
+    "\n",
+    "train_pred_log, acc_log, acc_cv_log, Y_pred_logreg = fit_ml_algo(LogisticRegression(), \n",
+    "                                                                X_train_standardized, \n",
+    "                                                                y_train, \n",
+    "                                                                X_test_standardized,\n",
+    "                                                                10)\n",
+    "\n",
+    "print(\"Accuracy: %s\" % acc_log)\n",
+    "print(\"Accuracy CV 10-Fold: %s\" % acc_cv_log)"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "### **3.4 Submission**"
+   ],
+   "metadata": {
+    "_uuid": "8154ae17f15be72790a702ca957d6bbf40029705"
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "submission = pd.DataFrame({\n",
+    "        \"PassengerId\": df_test[\"PassengerId\"],\n",
+    "        \"Survived\": Y_pred_logreg\n",
+    "    })\n",
+    "submission.to_csv('submission_logreg'\n",
+    "                  +\".csv\", \n",
+    "                  index=False)"
+   ],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "class_survived = [col for col in probs.columns if col.endswith('Prob_1')]\n",
+    "probs['1'] = probs[class_survived].sum(axis=1) / N\n",
+    "probs['0'] = probs.drop(columns=class_survived).sum(axis=1) / N\n",
+    "probs['pred'] = 0\n",
+    "pos = probs[probs['1'] >= 0.5].index\n",
+    "probs.loc[pos, 'pred'] = 1\n",
+    "\n",
+    "y_pred = probs['pred'].astype(int)\n",
+    "\n",
+    "submission_df = pd.DataFrame(columns=['PassengerId', 'Survived'])\n",
+    "submission_df['PassengerId'] = df_test['PassengerId']\n",
+    "submission_df['Survived'] = y_pred.values\n",
+    "submission_df.to_csv('submissions.csv', header=True, index=False)\n",
+    "submission_df.head(10)"
+   ],
+   "metadata": {
+    "execution": {
+     "iopub.status.busy": "2023-11-15T17:38:21.455658Z",
+     "iopub.execute_input": "2023-11-15T17:38:21.455991Z",
+     "iopub.status.idle": "2023-11-15T17:38:21.763836Z",
+     "shell.execute_reply.started": "2023-11-15T17:38:21.455934Z",
+     "shell.execute_reply": "2023-11-15T17:38:21.762776Z"
+    },
+    "trusted": true
+   },
+   "execution_count": null,
+   "outputs": []
+  }
+ ]
+}
